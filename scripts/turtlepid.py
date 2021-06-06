@@ -33,7 +33,6 @@ class turtle:
         print("Moving turtle forward")
         self.posn_x = float(input("Input the desired x coordinate:"))
         self.posn_y = float(input("Input the desired y coordinate:"))
-        self.posn_theta = float(input("Input the desired theta to rotate: "))
         self.theta = atan2((self.posn_y -self.pose.y),(self.posn_x - self.pose.x )) - self.pose.theta
         
     def callback(self, data):
@@ -41,27 +40,17 @@ class turtle:
         self.pose = data  
         self.pose.x = data.x
         self.pose.y = data.y
-        # rospy.loginfo(rospy.get_caller_id() + 'Pos: %f', data.x)
     
-    # def new_target(self):
-    #     x = np.dot(np.array([[-np.sin(self.pose.theta),np.cos(self.pose.theta)],[np.cos(self.pose.theta),np.sin(self.pose.theta)]]) ,np.array([self.posn_x,self.posn_y]))
-    #     rospy.loginfo('new target position: %f, %f',x[0],x[1])
-    #     return x
-
 
     def give_e_lin(self):
         e_lin = np.sqrt((self.posn_x - self.pose.x )**2 + (self.posn_y - self.pose.y)**2)
         self.e_lin_x = self.posn_x - self.pose.x
         self.e_lin_y = self.posn_y - self.pose.y
-        # rospy.loginfo('err: %f',e_lin)
-        # cosine = (self.posn_x - self.pose.x )/e_lin
-        # sine = (self.posn_y - self.pose.y)/e_lin
         return e_lin
     
     def give_e_ang(self):
         self.theta = atan2((self.posn_y -self.pose.y),(self.posn_x - self.pose.x )) 
-        # rospy.loginfo('theta: %f',self.theta)
-        self.e_ang = self.theta - self.pose.theta
+        self.e_ang = abs(self.theta - self.pose.theta)
 
     def give_de(self):
         self.diff_e_lin = (self.e_lin - self.e_lin_old)/0.1
@@ -69,7 +58,6 @@ class turtle:
         self.e_lin_old = self.e_lin
         self.e_ang_old = self.e_ang
         
-
 
     def give_inte(self):
         self.elin_dt += self.e_lin
@@ -92,7 +80,7 @@ class turtle:
         self.vel_msg.angular.z = 0
         self.pub.publish(self.vel_msg)
         self.goal_reached = True
-        rospy.loginfo('In else pos_x: %f pos_y: %f err: %f', self.pose.x ,self.pose.y,self.e_lin)
+        rospy.loginfo('Final pos_x: %f pos_y: %f err: %f', self.pose.x ,self.pose.y,self.e_lin)
 
     def inti_turtle(self):
         self.user_in()
