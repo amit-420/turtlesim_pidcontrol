@@ -4,4 +4,4 @@
 
 ![](results/responses.png)
 
-Repo is not final and is to be improved in future
+Known Errors: Drastic turns of turtle results in turtle going into oscillatory path. Further pid tuning is requiered.
